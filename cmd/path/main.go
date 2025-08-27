@@ -6,67 +6,73 @@ import (
 	"path/filepath"
 )
 
+// demonstrateFilepath shows functions that only handle path string manipulation.
+// They do not interact with the file system.
 func demonstrateFilepath() {
-	path := filepath.Join("home", "user", "documents", "reports.docx")
-	fmt.Printf("Caminho construído com Join: %s\n", path)
+	fmt.Println("--- Demonstration: 'path/filepath' only ---")
 
+	// Building a path safely for any OS.
+	path := filepath.Join("home", "user", "documents", "report.docx")
+	fmt.Printf("Path with Join: %s\n", path)
+
+	// Extracting parts of the path.
 	dir := filepath.Dir(path)
-	fmt.Printf("Diretório (dir): %s\n", dir)
-
 	base := filepath.Base(path)
-	fmt.Printf("Nome base (Base) %s\n", base)
-
 	ext := filepath.Ext(path)
-	fmt.Printf("Extensão (Ext): %s\n", ext)
+	fmt.Printf("Dir: %s, Base: %s, Ext: %s\n", dir, base, ext)
 
-	fmt.Printf("É absoluto? %t\n", filepath.IsAbs(path))
-	fmt.Printf("'/home/user' é absoluto? %t\n", filepath.IsAbs("/home/user"))
+	// Cleaning up a path.
+	dirtyPath := filepath.Join("home", "user", "..", "docs", ".", "file.txt")
+	cleanPath := filepath.Clean(dirtyPath)
+	fmt.Printf("Dirty path: %s\nClean path: %s\n", dirtyPath, cleanPath)
 
-	joinPath := filepath.Join("home", "user", "..", "user", "docs", ".", "file.txt")
-	cleanPath := filepath.Clean(joinPath)
-
-	fmt.Printf("Caminho %s\n", joinPath)
-	fmt.Printf("Caminho limpo %s\n", cleanPath)
-
-	absPath, err := filepath.Abs("main.go")
-	if err != nil {
-		fmt.Printf("Erro ao obter o caminho absoluto:", err)
-	} else {
-		fmt.Printf("Caminho absoluto (abs) de 'main.go': %s\n", absPath)
-	}
-
-	// dividir um caminho em diretório e nome nome do arquivo
+	// Splitting the path into directory and file.
 	dir, file := filepath.Split(path)
-	fmt.Printf("Split -> Diretório: %s, Arquivo: %s\n", dir, file)
+	fmt.Printf("Split -> Directory: %s, File: %s\n", dir, file)
+
+	// Checking if a name matches a pattern.
+	matched, _ := filepath.Match("*.docx", base)
+	fmt.Printf("Does the file '%s' match '*.docx'? %t\n", base, matched)
+
+	// Calculating the relative path between two paths.
+	basepath := "/home/user/go"
+	targetpath := "/home/user/go/src/project"
+	relativePath, _ := filepath.Rel(basepath, targetpath)
+	fmt.Printf("Relative path from '%s' to '%s' is: '%s'\n", basepath, targetpath, relativePath)
 }
 
+// demonstrateFilepathWithOS shows functions that interact with the file system.
 func demonstrateFilepathWithOS() {
-	fmt.Printf("'/home/user é absoluto? %t\n", filepath.IsAbs("/home/user"))
-	fmt.Printf("'documents' é absoluto? %t\n", filepath.IsAbs("documents"))
+	fmt.Println("\n--- Demonstration: 'path/filepath' with 'os' ---")
 
+	// Checking if a path is absolute.
+	fmt.Printf("Is '/home/user' absolute? %t\n", filepath.IsAbs("/home/user"))
+	fmt.Printf("Is 'documents' absolute? %t\n", filepath.IsAbs("documents"))
+
+	// Getting the absolute path of a file (requires OS query).
 	absPath, err := filepath.Abs("main.go")
 	if err != nil {
-		fmt.Println("Erro ao obter caminho absoluto: ", err)
+		fmt.Println("Error getting absolute path:", err)
 	} else {
-		fmt.Printf("Caminho absoluto de 'main.go' %s\n", absPath)
+		fmt.Printf("Absolute path of 'main.go': %s\n", absPath)
 	}
 
-	workDirectory, err := os.Getwd()
+	// Getting the current working directory.
+	wd, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Erro ao obter o diretório de trabalho atual ", err)
+		fmt.Println("Error getting working directory:", err)
 	} else {
-		fmt.Printf("Diretório de trabalho atual: %s\n", workDirectory)
+		fmt.Printf("Current working directory: %s\n", wd)
 	}
 
-	// verificando se um arquivo ou diretório existe
+	// Checking if a file or directory exists.
 	if info, err := os.Stat("main.go"); err != nil {
 		if os.IsNotExist(err) {
-			fmt.Printf("'main.go' não existe.")
+			fmt.Println("'main.go' does not exist.")
 		}
 	} else {
-		fmt.Printf("'main.go' existe e é um diretório? %t\n", info)
+		fmt.Printf("'main.go' exists and is a directory? %t\n", info.IsDir())
 	}
-
 }
 
 func main() {
