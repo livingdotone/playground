@@ -84,7 +84,7 @@ func walkDir() {
 
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			fmt.Printf("Erro ao tentar ler o diretório %q: %v\n", path, err)
+			fmt.Printf("Error %q: %v\n", path, err)
 		}
 
 		if d.IsDir() {
@@ -99,7 +99,7 @@ func walkDir() {
 	})
 
 	if err != nil {
-		fmt.Printf("Erro ao percorrer o diretório: %v\n", err)
+		fmt.Printf("Error traversing directory: %v\n", err)
 	}
 }
 
