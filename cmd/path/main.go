@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -75,7 +76,36 @@ func demonstrateFilepathWithOS() {
 	}
 }
 
+func walkDir() {
+	fmt.Println("----------WALKDIR-----------")
+	root := "."
+
+	extToFind := ".go"
+
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			fmt.Printf("Erro ao tentar ler o diretório %q: %v\n", path, err)
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		if filepath.Ext(path) == extToFind {
+			fmt.Println(path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Printf("Erro ao percorrer o diretório: %v\n", err)
+	}
+}
+
 func main() {
 	demonstrateFilepath()
 	demonstrateFilepathWithOS()
+
+	walkDir()
 }
